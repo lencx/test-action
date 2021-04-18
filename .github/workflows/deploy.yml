@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - run: sh "$(pwd)/rss.sh"
+      - run: bash "$(pwd)/rss.sh"
 
       # - name: Deploy
       #   uses: peaceiris/actions-gh-pages@v3
