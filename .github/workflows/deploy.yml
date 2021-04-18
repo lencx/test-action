@@ -12,9 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - run: sudo dpkg -i $DEB
-      - run: tar xvzf $TGZ --strip-components 1 -C $DEST
-      - run: ar p $DEB data.tar.gz | tar xvz --strip-components 2 -C $DEST
+      - run:  sudo apt-get install pandoc
 
       - run: bash "$(pwd)/rss.sh"
 
