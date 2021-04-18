@@ -15,6 +15,7 @@ newest_files=$( \
 items=""
 
 for file in ${newest_files[@]}; do
+  echo $file
   file_path_len=${#file}
   file_path_end="$(expr $file_path_len - 7)"
   title=$(grep "." $file | head -n1)
