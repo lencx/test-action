@@ -1,4 +1,4 @@
-name: github pages
+name: test windows
 
 on:
   push:
@@ -7,17 +7,12 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-18.04
+    runs-on: windows-2019
 
     steps:
       - uses: actions/checkout@v2
-
-      - run:  sudo apt-get install pandoc
-
-      - run: bash "$(pwd)/rss.sh"
-
-      # - name: Deploy
-      #   uses: peaceiris/actions-gh-pages@v3
-      #   with:
-      #     github_token: ${{ secrets.GH_TOKEN }}
-      #     publish_dir: ./src
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - run: yarn
+      - run: yarn rsw:deploy
