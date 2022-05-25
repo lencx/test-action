@@ -13,7 +13,8 @@ env:
   LINUX_ARM64_TARGET: aarch64-unknown-linux-musl
 
 jobs:
-  name: Build artifacts
+  build:
+    name: Build artifacts
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -46,17 +47,6 @@ jobs:
         run: |
           echo "using version tag ${GITHUB_REF:10}"
           echo ::set-output name=version::"${GITHUB_REF:10}"
-      - name: Install C compilation tooling (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install clang gcc-aarch64-linux-gnu -y
-          echo "TARGET_CC=clang" >> $GITHUB_ENV
-          echo "CFLAGS_aarch64_unknown_linux_musl=--sysroot=/usr/aarch64-linux-gnu" >> $GITHUB_ENV
-          echo "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=/usr/aarch64-linux-gnu/bin/ld" >> $GITHUB_ENV
-      - name: Install p7zip (MacOS)
-        if: matrix.os == 'macos-latest'
-        run: brew install p7zip
 
       - name: Add rustup target
         run: rustup target add ${{ matrix.target }}
