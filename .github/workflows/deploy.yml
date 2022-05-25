@@ -24,3 +24,15 @@ jobs:
     # Tree
     - name: Tree dir
       run: tree /F target/
+
+  release-tags:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ncipollo/release-action@v1
+      with:
+        artifacts: "release.tar.gz,foo/*.txt"
+        bodyFile: "body.md"
+        token: ${{ secrets.GITHUB_TOKEN }}
