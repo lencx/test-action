@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [macos-latest, windows-latest]
+        platform: [windows-latest]
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -35,4 +35,4 @@ jobs:
 
     # Tree
     - name: Tree dir
-      run: tree node_modules/@rsw
+      run: tree /F node_modules/@rsw
