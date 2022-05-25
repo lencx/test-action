@@ -19,6 +19,9 @@ jobs:
       - name: Tree dir
         run: tree /F target/
 
+      - name: run grr
+        run: cmd /C target/release/grr.exe
+
   # release-tags:
   #   runs-on: ubuntu-latest
   #   permissions:
