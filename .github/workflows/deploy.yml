@@ -9,27 +9,11 @@ jobs:
     name: Rust project
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - run: cargo build --release
-
-      # Tree
-      - name: Tree dir
-        run: tree /F target/
-
-      - name: run grr
-        run: cmd /C "./target/release/grr.exe"
-
-  # release-tags:
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     contents: write
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - uses: ncipollo/release-action@v1
-  #     with:
-  #       artifacts: "release.tar.gz,foo/*.txt"
-  #       bodyFile: "body.md"
-  #       token: ${{ secrets.GITHUB_TOKEN }}
+      - name: run rsw -h
+        run: ./rsw.exe -h
+      - name: run rsw init
+        run: ./rsw.exe init
+      - name: run rsw init2
+        run: cmd /C ./rsw.exe init
+      - name: run rsw -h2
+        run: start "" rsw.exe -h
