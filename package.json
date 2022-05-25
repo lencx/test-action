@@ -1,22 +1,15 @@
 {
-  "name": "my-wasm-app",
-  "version": "0.0.0",
+  "name": "test-action",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:lencx/test-action.git",
+  "author": "lencx <cxin1314@gmail.com>",
+  "license": "MIT",
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
-    "serve": "vite preview",
-    "rsw:deploy": "rsw && npm run build"
-  },
-  "dependencies": {
-    "vue": "^3.0.5"
+    "rsw": "rsw",
+    "build": "rsw build"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^1.2.3",
-    "@vue/compiler-sfc": "^3.0.1",
-    "rsw-node": "^0.1.2",
-    "typescript": "^4.3.2",
-    "vite": "^2.3.8",
-    "vite-plugin-rsw": "^1.6.3",
-    "vue-tsc": "^0.0.24"
+    "@rsw/cli": "^0.7.13"
   }
 }
