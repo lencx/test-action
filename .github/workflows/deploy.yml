@@ -9,11 +9,13 @@ jobs:
     name: Rust project
     runs-on: windows-latest
     steps:
+      - name: ls
+        run: tree -L 2
+      # - name: run rsw -h
+      #   run: ./rsw.exe -h
+      # - name: run rsw init
+      #   run: ./rsw.exe init
+      # - name: run rsw init2
+      #   run: cmd /C ./rsw.exe init
       - name: run rsw -h
-        run: ./rsw.exe -h
-      - name: run rsw init
-        run: ./rsw.exe init
-      - name: run rsw init2
-        run: cmd /C ./rsw.exe init
-      - name: run rsw -h2
         run: start "" rsw.exe -h
