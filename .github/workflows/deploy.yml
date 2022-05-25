@@ -4,57 +4,16 @@ on:
     branches:
       - main
 
-env:
-  RELEASE_DIR: artifacts
-  GITHUB_REF: '${{ github.ref }}'
-  WINDOWS_TARGET: x86_64-pc-windows-msvc
-  MACOS_TARGET: x86_64-apple-darwin
-  LINUX_AMD64_TARGET: x86_64-unknown-linux-musl
-  LINUX_ARM64_TARGET: aarch64-unknown-linux-musl
-
 jobs:
-  build:
-    name: Build artifacts
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          # - target: x86_64-unknown-linux-musl
-          #   os: ubuntu-latest
-          #   rust: stable
-          # - target: aarch64-unknown-linux-musl
-          #   os: ubuntu-latest
-          #   rust: stable
-          - target: x86_64-apple-darwin
-            os: macos-latest
-            rust: stable
-          - target: x86_64-pc-windows-msvc
-            os: windows-latest
-            rust: stable
-
+  build_and_test:
+    name: Rust project
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
-          toolchain: ${{ matrix.rust }}
-          override: true
-          target: wasm32-unknown-unknown
-
-      - name: Query version number
-        id: get_version
-        shell: bash
-        run: |
-          echo "using version tag ${GITHUB_REF:10}"
-          echo ::set-output name=version::"${GITHUB_REF:10}"
-      - name: Install p7zip (MacOS)
-        if: matrix.os == 'macos-latest'
-        run: brew install p7zip
-
-      - name: Add rustup target
-        run: rustup target add ${{ matrix.target }}
-
-      - name: Build
-        run: cargo build --release --target ${{ matrix.target }}
+          toolchain: stable
+      - run: cargo build --release
 
       # Tree
       - name: Tree dir
