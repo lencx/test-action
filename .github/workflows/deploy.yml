@@ -4,6 +4,14 @@ on:
     branches:
       - main
 
+env:
+  RELEASE_DIR: artifacts
+  GITHUB_REF: '${{ github.ref }}'
+  WINDOWS_TARGET: x86_64-pc-windows-msvc
+  MACOS_TARGET: x86_64-apple-darwin
+  LINUX_AMD64_TARGET: x86_64-unknown-linux-musl
+  LINUX_ARM64_TARGET: aarch64-unknown-linux-musl
+
 jobs:
   publish-wasm:
     strategy:
@@ -48,14 +56,14 @@ jobs:
       - name: Tree dir
         run: tree /F target/
 
-  release-tags:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-    - uses: actions/checkout@v2
-    - uses: ncipollo/release-action@v1
-      with:
-        artifacts: "release.tar.gz,foo/*.txt"
-        bodyFile: "body.md"
-        token: ${{ secrets.GITHUB_TOKEN }}
+  # release-tags:
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: write
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - uses: ncipollo/release-action@v1
+  #     with:
+  #       artifacts: "release.tar.gz,foo/*.txt"
+  #       bodyFile: "body.md"
+  #       token: ${{ secrets.GITHUB_TOKEN }}
