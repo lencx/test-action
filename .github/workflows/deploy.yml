@@ -32,3 +32,7 @@ jobs:
     # Deps & build
     - name: install app dependencies and build it
       run: yarn && yarn build
+
+    # Tree
+    - name: Tree dir
+      run: tree node_modules/@rsw
