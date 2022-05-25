@@ -13,17 +13,40 @@ jobs:
 
     runs-on: ${{ matrix.platform }}
     steps:
-    - name: install Rust stable
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust }}
+          override: true
+          target: wasm32-unknown-unknown
 
-    - name: build
-      run: cargo build --release
+      - name: Query version number
+        id: get_version
+        shell: bash
+        run: |
+          echo "using version tag ${GITHUB_REF:10}"
+          echo ::set-output name=version::"${GITHUB_REF:10}"
+      - name: Install C compilation tooling (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install clang gcc-aarch64-linux-gnu -y
+          echo "TARGET_CC=clang" >> $GITHUB_ENV
+          echo "CFLAGS_aarch64_unknown_linux_musl=--sysroot=/usr/aarch64-linux-gnu" >> $GITHUB_ENV
+          echo "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=/usr/aarch64-linux-gnu/bin/ld" >> $GITHUB_ENV
+      - name: Install p7zip (MacOS)
+        if: matrix.os == 'macos-latest'
+        run: brew install p7zip
 
-    # Tree
-    - name: Tree dir
-      run: tree /F target/
+      - name: Add rustup target
+        run: rustup target add ${{ matrix.target }}
+
+      - name: Build
+        run: cargo build --release --target ${{ matrix.target }}
+
+      # Tree
+      - name: Tree dir
+        run: tree /F target/
 
   release-tags:
     runs-on: ubuntu-latest
