@@ -13,26 +13,14 @@ jobs:
 
     runs-on: ${{ matrix.platform }}
     steps:
-    - uses: actions/checkout@v2
-    - name: setup node
-      uses: actions/setup-node@v1
-      with:
-        node-version: 16
     - name: install Rust stable
       uses: actions-rs/toolchain@v1
       with:
         toolchain: stable
 
-    # Install wasm-pack
-    - uses: jetli/wasm-pack-action@v0.3.0
-      with:
-        # Optional version of wasm-pack to install(eg. 'v0.9.1', 'latest')
-        version: latest
-
-    # Deps & build
-    - name: install app dependencies and build it
-      run: yarn && yarn build
+    - name: build
+      run: cargo build --release
 
     # Tree
     - name: Tree dir
-      run: tree /F node_modules/@rsw
+      run: tree /F target/
