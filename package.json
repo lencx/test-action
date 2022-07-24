@@ -10,6 +10,7 @@
     "build": "rsw build"
   },
   "devDependencies": {
-    "@rsw/cli": "^0.7.15"
+    "@rsw/cli": "^0.7.15",
+    "wasm-pack": "^0.10.3"
   }
 }
