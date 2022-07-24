@@ -6,16 +6,16 @@ on:
 
 jobs:
   build_and_test:
-    name: Rust project
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - target: x86_64-apple-darwin
+            os: macos-latest
+            rust: stable
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            rust: stable
     steps:
-      - name: ls
-        run: tree -L 2
-      # - name: run rsw -h
-      #   run: ./rsw.exe -h
-      # - name: run rsw init
-      #   run: ./rsw.exe init
-      # - name: run rsw init2
-      #   run: cmd /C ./rsw.exe init
-      - name: run rsw -h
-        run: start "" rsw.exe -h
+      - name: build
+        run: yarn build

@@ -10,6 +10,6 @@
     "build": "rsw build"
   },
   "devDependencies": {
-    "@rsw/cli": "^0.7.13"
+    "@rsw/cli": "^0.7.15"
   }
 }
