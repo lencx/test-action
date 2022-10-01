@@ -29,4 +29,4 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
-      - run: yarn updater -v=${{ needs.create-release.outputs.version }}
+      - run: yarn updater -v=${GITHUB_REF:10}
