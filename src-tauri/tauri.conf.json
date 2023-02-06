@@ -7,7 +7,7 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "TauriApp",
+    "productName": "ChatGPT",
     "version": "0.0.0"
   },
   "tauri": {
@@ -54,9 +54,6 @@
     "security": {
       "csp": null
     },
-    "updater": {
-      "active": false
-    },
     "windows": [
       {
         "fullscreen": false,
@@ -65,6 +62,14 @@
         "title": "tauri-app",
         "width": 800
       }
-    ]
+    ],
+    "updater": {
+      "active": true,
+      "dialog": false,
+      "endpoints": [
+        "https://lencx.github.io/test-action/install.json"
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEU5MEIwREEzNDlBNzdDN0MKUldSOGZLZEpvdzBMNmFOZ2cyY2NPeTdwK2hsV3gwcWxoZHdUWXRZWFBpQTh1dWhqWXhBdkl0cW8K"
+    }
   }
 }
