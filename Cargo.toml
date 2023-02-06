@@ -1,8 +1,9 @@
-[package]
-name = "grr"
-version = "0.1.0"
-edition = "2021"
+[workspace]
+members = ["src-tauri"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
+# fix: mac v1.2.0 can not copy/paste
+# https://github.com/tauri-apps/tauri/issues/5669
+[profile.release]
+strip = true
+lto = true
+opt-level = "s"

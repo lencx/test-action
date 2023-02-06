@@ -1,16 +1,36 @@
 {
-  "name": "test-action",
-  "version": "1.0.0",
-  "main": "index.js",
-  "repository": "git@github.com:lencx/test-action.git",
-  "author": "lencx <cxin1314@gmail.com>",
-  "license": "MIT",
+  "name": "tauri-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "rsw": "rsw",
-    "build": "rsw build"
+    "dev:fe": "vite",
+    "build:fe": "tsc && vite build",
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "updater": "tr updater",
+    "release": "tr release --git",
+    "fix:conf": "tr override --json.tauri_updater_active=false",
+    "fix:tray": "tr override --json.tauri_systemTray_iconPath=\"icons/tray-icon-light.png\" --json.tauri_systemTray_iconAsTemplate=false",
+    "fix:tray:mac": "tr override --json.tauri_systemTray_iconPath=\"icons/tray-icon.png\" --json.tauri_systemTray_iconAsTemplate=true",
+    "download": "node ./scripts/download.js",
+    "fmt:rs": "cargo fmt",
+    "tr": "tr",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^1.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@rsw/cli": "^0.7.22",
-    "wasm-pack": "^0.10.3"
+    "@tauri-apps/cli": "^1.2.2",
+    "@tauri-release/cli": "^0.2.3",
+    "@types/node": "^18.7.10",
+    "@types/react": "^18.0.15",
+    "@types/react-dom": "^18.0.6",
+    "@vitejs/plugin-react": "^3.0.0",
+    "typescript": "^4.6.4",
+    "vite": "^4.0.0"
   }
 }
