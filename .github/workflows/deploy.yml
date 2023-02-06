@@ -74,10 +74,7 @@ jobs:
         with:
           node-version: 18
           cache: pnpm
-          cache-dependency-path: chatgpt/pnpm-lock.yaml
-
-      - name: Install dependencies
-        run: cd chatgpt && pnpm install --force
+      - run: pnpm install --frozen-lockfile
 
       - name: 'Setup Rust'
         uses: dtolnay/rust-toolchain@stable
@@ -170,10 +167,7 @@ jobs:
         with:
           node-version: 18
           cache: pnpm
-          cache-dependency-path: chatgpt/pnpm-lock.yaml
-
-      - name: Install dependencies
-        run: cd chatgpt && pnpm install --force
+      - run: pnpm install --frozen-lockfile
 
       - run: pnpm updater --token=${{ secrets.GITHUB_TOKEN }}
 
