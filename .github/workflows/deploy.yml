@@ -180,19 +180,17 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Download ${{ needs.build-chatgpt.matrix.arch }} artifacts
+      - name: Download x86_64 artifacts
         uses: actions/download-artifact@v3
         with:
-          name: artifacts-${{ needs.build-chatgpt.matrix.arch }}
-          path: artifacts
+          name: artifacts-x86_64
+          path: artifacts/x86_64
 
-      # mv 'artifacts/x86_64/macos/ChatGPT.app.tar.gz' 'artifacts/ChatGPT_${{ github.ref_name }}_macos_x86_64.app.tar.gz'
-      # - name: Rename artifacts
-      #   run: |
-      #     mv "artifacts/${{}}/macos/Elk.app.tar.gz" "./artifacts/Elk_${{ github.ref_name }}_macos_x86_64.app.tar.gz"
-      #     mv "artifacts/x86_64/macos/Elk.app.tar.gz.sig" "./artifacts/Elk_${{ github.ref_name }}_macos_x86_64.app.tar.gz.sig"
-      #     mv "artifacts/x86_64/dmg/Elk_0.0.0_x64.dmg" "./artifacts/Elk_${{ github.ref_name }}_macos_x86_64.dmg"
-
+      - name: Download aarch64 artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: artifacts-aarch64
+          path: artifacts/aarch64
 
       - name: "Create Release"
         uses: softprops/action-gh-release@master
