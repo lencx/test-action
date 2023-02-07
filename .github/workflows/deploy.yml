@@ -39,7 +39,7 @@ jobs:
     #       release_name: 'ChatGPT ${{ env.version }}'
     #       body: 'See the assets to download this version and install.'
 
-  build-tauri:
+  build-chatgpt:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 40
     needs: get-version
@@ -51,10 +51,10 @@ jobs:
             os: ubuntu-latest
             arch: x86_64
             target: x86_64-unknown-linux-gnu
-          - build: linux
-            os: ubuntu-latest
-            arch: aarch64
-            target: aarch64-unknown-linux-gnu
+          # - build: linux
+          #   os: ubuntu-latest
+          #   arch: aarch64
+          #   target: aarch64-unknown-linux-gnu
           - build: macos
             os: macos-latest
             arch: x86_64
@@ -117,69 +117,65 @@ jobs:
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
 
       - uses: actions/upload-artifact@v3
-        if: matrix.target == 'aarch64-apple-darwin'
         with:
-          name: chatgpt-macos-aarch64
-          path: ./target/aarch64-apple-darwin/release/bundle/macos/ChatGPT.app.*
-
-      - uses: actions/upload-artifact@v3
-        if: matrix.target == 'x86_64-apple-darwin'
-        with:
-          name: chatgpt-macos-x86_64
-          path: ./target/x86_64-apple-darwin/release/bundle/macos/ChatGPT.app.*
-
-      # target\x86_64-pc-windows-msvc\release\bundle\msi\ChatGPT_0.0.0_x64_en-US.msi.zip
-      - uses: actions/upload-artifact@v3
-        if: matrix.os == 'windows-latest'
-        with:
-          name: chatgpt-windows
-          path: ./target/x86_64-pc-windows-msvc/release/bundle/msi/ChatGPT_**.msi.*
-
-      - uses: actions/upload-artifact@v3
-        if: matrix.target == 'x86_64-unknown-linux-gnu'
-        with:
-          name: chatgpt-linux-x86_64
+          name: artifacts-${{ matrix.config.arch }}
           path: |
-            ./target/x86_64-unknown-linux-gnu/release/bundle/appimage/chat-gpt_**.deb
-            ./target/x86_64-unknown-linux-gnu/release/bundle/appimage/chat-gpt_**.AppImage.*
+            ./target/${{ matrix.config.target }}/release/bundle/**/**.app.*
+            ./target/${{ matrix.config.target }}/release/bundle/**/**.msi.*
+            ./target/${{ matrix.config.target }}/release/bundle/**/**.AppImage.*
+            ./target/${{ matrix.config.target }}/release/bundle/**/**.deb
 
-      - uses: actions/upload-artifact@v3
-        if: matrix.target == 'aarch64-unknown-linux-gnu'
-        with:
-          name: chatgpt-linux-aarch64
-          path: |
-            ./target/aarch64-unknown-linux-gnu/release/bundle/appimage/chat-gpt_**.deb
-            ./target/aarch64-unknown-linux-gnu/release/bundle/appimage/chat-gpt_**.AppImage.*
+      # - uses: actions/upload-artifact@v3
+      #   if: matrix.target == 'aarch64-apple-darwin'
+      #   with:
+      #     name: chatgpt-macos-aarch64
+      #     path: ./target/aarch64-apple-darwin/release/bundle/macos/ChatGPT.app.*
 
-  publish-to-github:
-    needs: [get-version, build-tauri]
+      # - uses: actions/upload-artifact@v3
+      #   if: matrix.target == 'x86_64-apple-darwin'
+      #   with:
+      #     name: chatgpt-macos-x86_64
+      #     path: ./target/x86_64-apple-darwin/release/bundle/macos/ChatGPT.app.*
+
+      # # target\x86_64-pc-windows-msvc\release\bundle\msi\ChatGPT_0.0.0_x64_en-US.msi.zip
+      # - uses: actions/upload-artifact@v3
+      #   if: matrix.os == 'windows-latest'
+      #   with:
+      #     name: chatgpt-windows
+      #     path: ./target/x86_64-pc-windows-msvc/release/bundle/msi/ChatGPT_**.msi.*
+
+      # - uses: actions/upload-artifact@v3
+      #   if: matrix.target == 'x86_64-unknown-linux-gnu'
+      #   with:
+      #     name: chatgpt-linux-x86_64
+      #     path: |
+      #       ./target/x86_64-unknown-linux-gnu/release/bundle/appimage/chat-gpt_**.deb
+      #       ./target/x86_64-unknown-linux-gnu/release/bundle/appimage/chat-gpt_**.AppImage.*
+
+      # - uses: actions/upload-artifact@v3
+      #   if: matrix.target == 'aarch64-unknown-linux-gnu'
+      #   with:
+      #     name: chatgpt-linux-aarch64
+      #     path: |
+      #       ./target/aarch64-unknown-linux-gnu/release/bundle/appimage/chat-gpt_**.deb
+      #       ./target/aarch64-unknown-linux-gnu/release/bundle/appimage/chat-gpt_**.AppImage.*
+
+  release-chatgpt:
+    needs: [get-version, build-chatgpt]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
-      - name: Download x86_64 artifacts
+      - name: Download ${{ matrix.config.arch }} artifacts
         uses: actions/download-artifact@v3
         with:
-          name: artifacts-x86_64
-          path: artifacts/x86_64
-
-      - name: Download aarch64 artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: artifacts-aarch64
-          path: artifacts/aarch64
+          name: artifacts-${{ matrix.config.arch }}
+          path: artifacts/${{ matrix.config.arch }}
 
       # mv 'artifacts/x86_64/macos/ChatGPT.app.tar.gz' 'artifacts/ChatGPT_${{ github.ref_name }}_macos_x86_64.app.tar.gz'
       - name: Rename artifacts
         run: |
           tree artifacts
-
-    #   - name: Query version number
-    #     id: get_version
-    #     shell: bash
-    #     run: |
-    #       echo "using version tag ${GITHUB_REF:10}"
-    #       echo "version=${GITHUB_REF:10}" >> $GITHUB_ENV
 
       - name: "Create Release"
         uses: softprops/action-gh-release@master
@@ -193,7 +189,7 @@ jobs:
 
   updater:
     runs-on: ubuntu-latest
-    needs: [get-version, publish-to-github]
+    needs: [get-version, release-chatgpt]
     env:
       ver: ${{ needs.get-version.env.version }}
 
@@ -226,7 +222,7 @@ jobs:
   # publish-winget:
   #   # Action can only be run on windows
   #   runs-on: windows-latest
-  #   needs: [create-release, build-tauri]
+  #   needs: [create-release, build-chatgpt]
   #   steps:
   #     - uses: vedantmgoyal2009/winget-releaser@v1
   #       with:
