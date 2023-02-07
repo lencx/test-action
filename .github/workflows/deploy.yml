@@ -180,10 +180,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Download ${{ matrix.arch }} artifacts
+      - name: Download ${{ needs.build-chatgpt.matrix.arch }} artifacts
         uses: actions/download-artifact@v3
         with:
-          name: artifacts-${{ matrix.arch }}
+          name: artifacts-${{ needs.build-chatgpt.matrix.arch }}
           path: artifacts
 
       # mv 'artifacts/x86_64/macos/ChatGPT.app.tar.gz' 'artifacts/ChatGPT_${{ github.ref_name }}_macos_x86_64.app.tar.gz'
