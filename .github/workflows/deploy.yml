@@ -17,230 +17,236 @@ jobs:
           echo "using version tag ${GITHUB_REF:10}"
           echo "version=${GITHUB_REF:10}" >> $GITHUB_ENV
 
-  # create-release:
-  #   runs-on: ubuntu-latest
-
-    # steps:
-    #   - uses: actions/checkout@v2
-    #   - name: Query version number
-    #     id: get_version
-    #     shell: bash
-    #     run: |
-    #       echo "using version tag ${GITHUB_REF:10}"
-    #       echo "version=${GITHUB_REF:10}" >> $GITHUB_ENV
-
-    #   - name: Create Release
-    #     id: create_release
-    #     uses: actions/create-release@v1
-    #     env:
-    #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #     with:
-    #       tag_name: '${{ env.version }}'
-    #       release_name: 'ChatGPT ${{ env.version }}'
-    #       body: 'See the assets to download this version and install.'
-
-  build-chatgpt:
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 40
-    needs: get-version
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - build: linux
-            os: ubuntu-latest
-            arch: x86_64
-            target: x86_64-unknown-linux-gnu
-          # - build: linux
-          #   os: ubuntu-latest
-          #   arch: aarch64
-          #   target: aarch64-unknown-linux-gnu
-          - build: macos
-            os: macos-latest
-            arch: x86_64
-            target: x86_64-apple-darwin
-          - buid: macos
-            os: macos-latest
-            arch: aarch64
-            target: aarch64-apple-darwin
-          - build: windows
-            os: windows-latest
-            arch: x86_64
-            target: x86_64-pc-windows-msvc
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          version: 7
-          run_install: false
-
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-
-      - name: 'Setup Rust'
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.target }}
-      - uses: Swatinem/rust-cache@v2
-        with:
-          key: ${{ matrix.target }}
-
-      - name: Install dependencies (ubuntu only)
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libayatana-appindicator3-dev librsvg2-dev patchelf
-
-      - name: Build
-        run: pnpm build:fe
-
-      - name: Install rust target
-        run: rustup target add ${{ matrix.target }}
-
-      - name: fix tray icon
-        if: matrix.os != 'macos-latest'
-        run: |
-          pnpm fix:tray
-
-      - run: pnpm build --target ${{ matrix.target }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
-
-      - uses: actions/upload-artifact@v3
-        if: matrix.os == 'ubuntu-latest'
-        with:
-          name: artifacts-${{ matrix.arch }}
-          path: |
-            ./target/${{ matrix.target }}/release/bundle/appimage/**.AppImage.*
-            ./target/${{ matrix.target }}/release/bundle/deb/**.deb
-
-      - uses: actions/upload-artifact@v3
-        if: matrix.os == 'macos-latest'
-        with:
-          name: artifacts-${{ matrix.arch }}
-          path: |
-            ./target/${{ matrix.target }}/release/bundle/dmg/**.dmg
-            ./target/${{ matrix.target }}/release/bundle/macos/**.app.*
-
-      - uses: actions/upload-artifact@v3
-        if: matrix.os == 'windows-latest'
-        with:
-          name: artifacts-${{ matrix.arch }}
-          path: |
-            ./target/${{ matrix.target }}/release/bundle/msi/**.msi.*
-
-      # - uses: actions/upload-artifact@v3
-      #   if: matrix.target == 'aarch64-apple-darwin'
-      #   with:
-      #     name: chatgpt-macos-aarch64
-      #     path: ./target/aarch64-apple-darwin/release/bundle/macos/ChatGPT.app.*
-
-      # - uses: actions/upload-artifact@v3
-      #   if: matrix.target == 'x86_64-apple-darwin'
-      #   with:
-      #     name: chatgpt-macos-x86_64
-      #     path: ./target/x86_64-apple-darwin/release/bundle/macos/ChatGPT.app.*
-
-      # # target\x86_64-pc-windows-msvc\release\bundle\msi\ChatGPT_0.0.0_x64_en-US.msi.zip
-      # - uses: actions/upload-artifact@v3
-      #   if: matrix.os == 'windows-latest'
-      #   with:
-      #     name: chatgpt-windows
-      #     path: ./target/x86_64-pc-windows-msvc/release/bundle/msi/ChatGPT_**.msi.*
-
-      # - uses: actions/upload-artifact@v3
-      #   if: matrix.target == 'x86_64-unknown-linux-gnu'
-      #   with:
-      #     name: chatgpt-linux-x86_64
-      #     path: |
-      #       ./target/x86_64-unknown-linux-gnu/release/bundle/appimage/chat-gpt_**.deb
-      #       ./target/x86_64-unknown-linux-gnu/release/bundle/appimage/chat-gpt_**.AppImage.*
-
-      # - uses: actions/upload-artifact@v3
-      #   if: matrix.target == 'aarch64-unknown-linux-gnu'
-      #   with:
-      #     name: chatgpt-linux-aarch64
-      #     path: |
-      #       ./target/aarch64-unknown-linux-gnu/release/bundle/appimage/chat-gpt_**.deb
-      #       ./target/aarch64-unknown-linux-gnu/release/bundle/appimage/chat-gpt_**.AppImage.*
-
-  release-chatgpt:
-    needs: [get-version, build-chatgpt]
+  print:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Download x86_64 artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: artifacts-x86_64
-          path: artifacts/x86_64
-
-      - name: Download aarch64 artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: artifacts-aarch64
-          path: artifacts/aarch64
-
-      - name: "Create Release"
-        uses: softprops/action-gh-release@master
-        env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-        with:
-          tag_name: ChatGPT v${{ needs.get-version.env.version }}
-          prerelease: false
-          generate_release_notes: false
-          files: ./artifacts/**/*
-
-  updater:
-    runs-on: ubuntu-latest
-    needs: [get-version, release-chatgpt]
-    env:
-      ver: ${{ needs.get-version.env.version }}
+    needs: [get-version]
 
     steps:
       - uses: actions/checkout@v3
+      - run: echo ${{ get-version.env.version }}
 
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          version: 7
-          run_install: false
+  # # create-release:
+  # #   runs-on: ubuntu-latest
 
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
+  #   # steps:
+  #   #   - uses: actions/checkout@v2
+  #   #   - name: Query version number
+  #   #     id: get_version
+  #   #     shell: bash
+  #   #     run: |
+  #   #       echo "using version tag ${GITHUB_REF:10}"
+  #   #       echo "version=${GITHUB_REF:10}" >> $GITHUB_ENV
 
-      - run: pnpm updater --token=${{ secrets.GITHUB_TOKEN }}
+  #   #   - name: Create Release
+  #   #     id: create_release
+  #   #     uses: actions/create-release@v1
+  #   #     env:
+  #   #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #   #     with:
+  #   #       tag_name: '${{ env.version }}'
+  #   #       release_name: 'ChatGPT ${{ env.version }}'
+  #   #       body: 'See the assets to download this version and install.'
 
-      - name: Deploy install.json
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./updater
-          # force_orphan: true
+  # build-chatgpt:
+  #   runs-on: ${{ matrix.os }}
+  #   timeout-minutes: 40
+  #   needs: get-version
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       include:
+  #         - build: linux
+  #           os: ubuntu-latest
+  #           arch: x86_64
+  #           target: x86_64-unknown-linux-gnu
+  #         # - build: linux
+  #         #   os: ubuntu-latest
+  #         #   arch: aarch64
+  #         #   target: aarch64-unknown-linux-gnu
+  #         - build: macos
+  #           os: macos-latest
+  #           arch: x86_64
+  #           target: x86_64-apple-darwin
+  #         - buid: macos
+  #           os: macos-latest
+  #           arch: aarch64
+  #           target: aarch64-apple-darwin
+  #         - build: windows
+  #           os: windows-latest
+  #           arch: x86_64
+  #           target: x86_64-pc-windows-msvc
 
-  # publish-winget:
-  #   # Action can only be run on windows
-  #   runs-on: windows-latest
-  #   needs: [create-release, build-chatgpt]
   #   steps:
-  #     - uses: vedantmgoyal2009/winget-releaser@v1
+  #     - uses: actions/checkout@v3
+
+  #     - uses: pnpm/action-setup@v2
+  #       name: Install pnpm
+  #       id: pnpm-install
   #       with:
-  #         identifier: lencx.ChatGPT
-  #         token: ${{ secrets.WINGET_TOKEN }}
-  #         version: ${{ env.version }}
+  #         version: 7
+  #         run_install: false
+
+  #     - name: Install Node.js
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: 18
+  #         cache: pnpm
+  #     - run: pnpm install --frozen-lockfile
+
+  #     - name: 'Setup Rust'
+  #       uses: dtolnay/rust-toolchain@stable
+  #       with:
+  #         targets: ${{ matrix.target }}
+  #     - uses: Swatinem/rust-cache@v2
+  #       with:
+  #         key: ${{ matrix.target }}
+
+  #     - name: Install dependencies (ubuntu only)
+  #       if: matrix.os == 'ubuntu-latest'
+  #       run: |
+  #         sudo apt-get update
+  #         sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libayatana-appindicator3-dev librsvg2-dev patchelf
+
+  #     - name: Build
+  #       run: pnpm build:fe
+
+  #     - name: Install rust target
+  #       run: rustup target add ${{ matrix.target }}
+
+  #     - name: fix tray icon
+  #       if: matrix.os != 'macos-latest'
+  #       run: |
+  #         pnpm fix:tray
+
+  #     - run: pnpm build --target ${{ matrix.target }}
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+  #         TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+
+  #     - uses: actions/upload-artifact@v3
+  #       if: matrix.os == 'ubuntu-latest'
+  #       with:
+  #         name: artifacts-${{ matrix.arch }}
+  #         path: |
+  #           ./target/${{ matrix.target }}/release/bundle/appimage/**.AppImage.*
+  #           ./target/${{ matrix.target }}/release/bundle/deb/**.deb
+
+  #     - uses: actions/upload-artifact@v3
+  #       if: matrix.os == 'macos-latest'
+  #       with:
+  #         name: artifacts-${{ matrix.arch }}
+  #         path: |
+  #           ./target/${{ matrix.target }}/release/bundle/dmg/**.dmg
+  #           ./target/${{ matrix.target }}/release/bundle/macos/**.app.*
+
+  #     - uses: actions/upload-artifact@v3
+  #       if: matrix.os == 'windows-latest'
+  #       with:
+  #         name: artifacts-${{ matrix.arch }}
+  #         path: |
+  #           ./target/${{ matrix.target }}/release/bundle/msi/**.msi.*
+
+  #     # - uses: actions/upload-artifact@v3
+  #     #   if: matrix.target == 'aarch64-apple-darwin'
+  #     #   with:
+  #     #     name: chatgpt-macos-aarch64
+  #     #     path: ./target/aarch64-apple-darwin/release/bundle/macos/ChatGPT.app.*
+
+  #     # - uses: actions/upload-artifact@v3
+  #     #   if: matrix.target == 'x86_64-apple-darwin'
+  #     #   with:
+  #     #     name: chatgpt-macos-x86_64
+  #     #     path: ./target/x86_64-apple-darwin/release/bundle/macos/ChatGPT.app.*
+
+  #     # # target\x86_64-pc-windows-msvc\release\bundle\msi\ChatGPT_0.0.0_x64_en-US.msi.zip
+  #     # - uses: actions/upload-artifact@v3
+  #     #   if: matrix.os == 'windows-latest'
+  #     #   with:
+  #     #     name: chatgpt-windows
+  #     #     path: ./target/x86_64-pc-windows-msvc/release/bundle/msi/ChatGPT_**.msi.*
+
+  #     # - uses: actions/upload-artifact@v3
+  #     #   if: matrix.target == 'x86_64-unknown-linux-gnu'
+  #     #   with:
+  #     #     name: chatgpt-linux-x86_64
+  #     #     path: |
+  #     #       ./target/x86_64-unknown-linux-gnu/release/bundle/appimage/chat-gpt_**.deb
+  #     #       ./target/x86_64-unknown-linux-gnu/release/bundle/appimage/chat-gpt_**.AppImage.*
+
+  #     # - uses: actions/upload-artifact@v3
+  #     #   if: matrix.target == 'aarch64-unknown-linux-gnu'
+  #     #   with:
+  #     #     name: chatgpt-linux-aarch64
+  #     #     path: |
+  #     #       ./target/aarch64-unknown-linux-gnu/release/bundle/appimage/chat-gpt_**.deb
+  #     #       ./target/aarch64-unknown-linux-gnu/release/bundle/appimage/chat-gpt_**.AppImage.*
+
+  # release-chatgpt:
+  #   needs: [get-version, build-chatgpt]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+
+  #     - name: Download x86_64 artifacts
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: artifacts-x86_64
+  #         path: artifacts/x86_64
+
+  #     - name: Download aarch64 artifacts
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: artifacts-aarch64
+  #         path: artifacts/aarch64
+
+  #     - name: "Create Release"
+  #       uses: softprops/action-gh-release@master
+  #       env:
+  #         GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+  #       with:
+  #         tag_name: ChatGPT v${{ needs.get-version.env.version }}
+  #         prerelease: false
+  #         generate_release_notes: false
+  #         files: ./artifacts/**/*
+
+  # updater:
+  #   runs-on: ubuntu-latest
+  #   needs: [get-version, release-chatgpt]
+
+  #   steps:
+  #     - uses: actions/checkout@v3
+
+  #     - uses: pnpm/action-setup@v2
+  #       name: Install pnpm
+  #       id: pnpm-install
+  #       with:
+  #         version: 7
+  #         run_install: false
+
+  #     - name: Install Node.js
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: 18
+  #         cache: pnpm
+  #     - run: pnpm install --frozen-lockfile
+
+  #     - run: pnpm updater --token=${{ secrets.GITHUB_TOKEN }}
+
+  #     - name: Deploy install.json
+  #       uses: peaceiris/actions-gh-pages@v3
+  #       with:
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #         publish_dir: ./updater
+  #         # force_orphan: true
+
+  # # publish-winget:
+  # #   # Action can only be run on windows
+  # #   runs-on: windows-latest
+  # #   needs: [create-release, build-chatgpt]
+  # #   steps:
+  # #     - uses: vedantmgoyal2009/winget-releaser@v1
+  # #       with:
+  # #         identifier: lencx.ChatGPT
+  # #         token: ${{ secrets.WINGET_TOKEN }}
+  # #         version: ${{ env.version }}
