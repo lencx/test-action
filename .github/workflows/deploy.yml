@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - run: echo ${{ get-version.env.version }}
+      - run: echo ${{ needs.get-version.env.version }}
 
   # # create-release:
   # #   runs-on: ubuntu-latest
