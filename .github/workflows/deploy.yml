@@ -170,6 +170,25 @@ jobs:
           name: artifacts-aarch64
           path: artifacts/aarch64
 
+      - name: Rename artifacts
+        run: |
+          mv "artifacts/x86_64/macos/ChatGPT.app.tar.gz" "./artifacts/ChatGPT_${{ env.version }}_macos_x86_64.app.tar.gz"
+          mv "artifacts/x86_64/macos/ChatGPT.app.tar.gz.sig" "./artifacts/ChatGPT_${{ env.version }}_macos_x86_64.app.tar.gz.sig"
+          mv "artifacts/x86_64/dmg/ChatGPT_${{ env.version }}_x64.dmg" "./artifacts/ChatGPT_${{ env.version }}_macos_x86_64.dmg"
+
+          mv "artifacts/aarch64/macos/ChatGPT.app.tar.gz" "./artifacts/ChatGPT_${{ env.version }}_macos_aarch64.app.tar.gz"
+          mv "artifacts/aarch64/macos/ChatGPT.app.tar.gz.sig" "./artifacts/ChatGPT_${{ env.version }}_macos_aarch64.app.tar.gz.sig"
+          mv "artifacts/aarch64/dmg/ChatGPT_${{ env.version }}_aarch64.dmg" "./artifacts/ChatGPT_${{ env.version }}_macos_aarch64.dmg"
+
+          mv "artifacts/x86_64/ChatGPT_${{ env.version }}_x64_en-US.msi" "./artifacts/ChatGPT_${{ env.version }}_windows_x86_64.msi"
+          mv "artifacts/x86_64/ChatGPT_${{ env.version }}_x64_en-US.msi.zip" "./artifacts/ChatGPT_${{ env.version }_windows_x86_64.msi.zip"
+          mv "artifacts/x86_64/ChatGPT_${{ env.version }}_x64_en-US.msi.zip.sig" "./artifacts/ChatGPT_${{ env.version }}_windows_x86_64.msi.sig"
+
+          rm "artifacts/x86_64/appimage/chat-gpt_${{ env.version }}_amd64.AppImage"
+          mv "artifacts/x86_64/appimage/chat-gpt_${{ env.version }}_amd64.AppImage.tar.gz" "./artifacts/chat-gpt_${{ env.version }_amd64.AppImage.tar.gz"
+          mv "artifacts/x86_64/appimage/chat-gpt_${{ env.version }}_amd64.AppImage.tar.gz.sig" "./artifacts/chat-gpt_${{ env.version }_amd64.AppImage.tar.gz.sig"
+          mv "artifacts/x86_64/deb/chat-gpt_${{ env.version }}_amd64.deb.sig" "./artifacts/chat-gpt_${{ env.version }}_amd64.deb.sig"
+
       - name: "Create Release"
         uses: softprops/action-gh-release@master
         env:
@@ -220,3 +239,23 @@ jobs:
   #         identifier: lencx.ChatGPT
   #         token: ${{ secrets.WINGET_TOKEN }}
   #         version: ${{ env.version }}
+
+
+# Finished 3 bundles at:
+# /Users/runner/work/test-action/test-action/target/x86_64-apple-darwin/release/bundle/macos/ChatGPT.app
+# /Users/runner/work/test-action/test-action/target/x86_64-apple-darwin/release/bundle/dmg/ChatGPT_0.1.0_x64.dmg
+# /Users/runner/work/test-action/test-action/target/x86_64-apple-darwin/release/bundle/macos/ChatGPT.app.tar.gz (updater)
+
+# Info 1 updater archive at:
+# Info         /Users/runner/work/test-action/test-action/target/x86_64-apple-darwin/release/bundle/macos/ChatGPT.app.tar.gz.sig
+
+# /Users/runner/work/test-action/test-action/target/aarch64-apple-darwin/release/bundle/macos/ChatGPT.app
+# /Users/runner/work/test-action/test-action/target/aarch64-apple-darwin/release/bundle/dmg/ChatGPT_0.1.0_aarch64.dmg
+# /Users/runner/work/test-action/test-action/target/aarch64-apple-darwin/release/bundle/macos/ChatGPT.app.tar.gz (updater)
+
+# Info 1 updater archive at:
+# Info         /Users/runner/work/test-action/test-action/target/aarch64-apple-darwin/release/bundle/macos/ChatGPT.app.tar.gz.sig
+
+
+# aarch64
+# aarch64
