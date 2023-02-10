@@ -180,9 +180,9 @@ jobs:
           mv "artifacts/aarch64/macos/ChatGPT.app.tar.gz.sig" "./artifacts/ChatGPT_${{ env.version }}_macos_aarch64.app.tar.gz.sig"
           mv "artifacts/aarch64/dmg/ChatGPT_${{ env.version }}_aarch64.dmg" "./artifacts/ChatGPT_${{ env.version }}_macos_aarch64.dmg"
 
-          mv "artifacts/x86_64/ChatGPT_${{ env.version }}_x64_en-US.msi" "./artifacts/ChatGPT_${{ env.version }}_windows_x86_64.msi"
-          mv "artifacts/x86_64/ChatGPT_${{ env.version }}_x64_en-US.msi.zip" "./artifacts/ChatGPT_${{ env.version }_windows_x86_64.msi.zip"
-          mv "artifacts/x86_64/ChatGPT_${{ env.version }}_x64_en-US.msi.zip.sig" "./artifacts/ChatGPT_${{ env.version }}_windows_x86_64.msi.sig"
+          mv "artifacts/x86_64/msi/ChatGPT_${{ env.version }}_x64_en-US.msi" "./artifacts/ChatGPT_${{ env.version }}_windows_x86_64.msi"
+          mv "artifacts/x86_64/msi/ChatGPT_${{ env.version }}_x64_en-US.msi.zip" "./artifacts/ChatGPT_${{ env.version }_windows_x86_64.msi.zip"
+          mv "artifacts/x86_64/msi/ChatGPT_${{ env.version }}_x64_en-US.msi.zip.sig" "./artifacts/ChatGPT_${{ env.version }}_windows_x86_64.msi.sig"
 
           rm "artifacts/x86_64/appimage/chat-gpt_${{ env.version }}_amd64.AppImage"
           mv "artifacts/x86_64/appimage/chat-gpt_${{ env.version }}_amd64.AppImage.tar.gz" "./artifacts/chat-gpt_${{ env.version }_amd64.AppImage.tar.gz"
