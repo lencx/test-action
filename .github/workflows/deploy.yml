@@ -129,7 +129,7 @@ jobs:
       - name: Rename artifacts
         run: |
           tree artifacts
-          echo "---------------------------------"
+
           mv "artifacts/aarch64/dmg/ChatGPT_${{ env.version }}_aarch64.dmg" "artifacts/ChatGPT_${{ env.version }}_macos_aarch64.dmg"
           mv "artifacts/aarch64/macos/ChatGPT.app.tar.gz" "artifacts/ChatGPT_${{ env.version }}_macos_aarch64.app.tar.gz"
           mv "artifacts/aarch64/macos/ChatGPT.app.tar.gz.sig" "artifacts/ChatGPT_${{ env.version }}_macos_aarch64.app.tar.gz.sig"
@@ -144,7 +144,7 @@ jobs:
 
           mv "artifacts/x86_64/ChatGPT_${{ env.version }}_x64_en-US.msi" "artifacts/ChatGPT_${{ env.version }}_windows_x86_64.msi"
           mv "artifacts/x86_64/ChatGPT_${{ env.version }}_x64_en-US.msi.zip" "artifacts/ChatGPT_${{ env.version }}_windows_x86_64.msi.zip"
-          mv "artifacts/x86_64/ChatGPT_${{ env.version }}_x64_en-US.msi.zip.sig" "artifacts/ChatGPT_${{ env.version }}_windows_x86_64.msi.zip"
+          mv "artifacts/x86_64/ChatGPT_${{ env.version }}_x64_en-US.msi.zip.sig" "artifacts/ChatGPT_${{ env.version }}_windows_x86_64.msi.zip.sig"
 
       - name: Create Release
         uses: softprops/action-gh-release@master
@@ -179,7 +179,12 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm updater --token=${{ secrets.GITHUB_TOKEN }}
+      - name: Updater JSON
+        run: pnpm updater --token=${{ secrets.GITHUB_TOKEN }}
+
+      - run: |
+        tree updater
+        cat updater/install.json
 
       - name: Deploy install.json
         uses: peaceiris/actions-gh-pages@v3
