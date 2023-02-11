@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Query version number
         run: |
           echo "using version tag ${GITHUB_REF:10}"
           echo "version=${GITHUB_REF:10}" >> $GITHUB_ENV
