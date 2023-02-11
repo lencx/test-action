@@ -182,6 +182,9 @@ jobs:
       - name: Updater JSON
         run: pnpm updater --token=${{ secrets.GITHUB_TOKEN }}
 
+      - name: Dir Tree
+        run: tree -L 2
+
       - name: Deploy install.json
         uses: peaceiris/actions-gh-pages@v3
         with:
