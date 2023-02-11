@@ -146,12 +146,14 @@ jobs:
           mv "artifacts/x86_64/ChatGPT_${{ env.version }}_x64_en-US.msi.zip" "artifacts/ChatGPT_${{ env.version }}_windows_x86_64.msi.zip"
           mv "artifacts/x86_64/ChatGPT_${{ env.version }}_x64_en-US.msi.zip.sig" "artifacts/ChatGPT_${{ env.version }}_windows_x86_64.msi.zip"
 
-      - name: "Create Release"
+      - name: Create Release
         uses: softprops/action-gh-release@master
         env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ChatGPT ${{ env.version }}
+          tag_name: v${{ env.version }}
+          name: ChatGPT v${{ env.version }}
+          body: See the assets to download this version and install.
           prerelease: false
           generate_release_notes: false
           files: ./artifacts/**/*
