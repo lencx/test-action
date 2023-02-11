@@ -15,6 +15,7 @@ jobs:
         shell: bash
         run: |
           echo "using version tag ${GITHUB_REF:10}"
+          echo "version=${GITHUB_REF:10}" >> $GITHUB_ENV
 
   release-chatgpt:
     needs: [get-version]
@@ -22,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: |
-        echo "${{ needs.get-version.env.version }}"
+        echo "${{ env.version }}"
 
   # build-chatgpt:
   #   runs-on: ${{ matrix.os }}
