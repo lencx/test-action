@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: |
-        echo ${{ env.version }}
+        echo "${{ env.version }}"
         echo ${{ needs.get-version.env.version }}
 
   # build-chatgpt:
