@@ -33,6 +33,10 @@ jobs:
             os: windows-latest
             arch: x86_64
             target: x86_64-pc-windows-msvc
+          - build: windows
+            os: windows-latest
+            arch: aarch64
+            target: aarch64-pc-windows-msvc
 
     steps:
       - uses: actions/checkout@v3
@@ -145,6 +149,10 @@ jobs:
           mv "artifacts/x86_64/ChatGPT_${{ env.version }}_x64_en-US.msi" "artifacts/ChatGPT_${{ env.version }}_windows_x86_64.msi"
           mv "artifacts/x86_64/ChatGPT_${{ env.version }}_x64_en-US.msi.zip" "artifacts/ChatGPT_${{ env.version }}_windows_x86_64.msi.zip"
           mv "artifacts/x86_64/ChatGPT_${{ env.version }}_x64_en-US.msi.zip.sig" "artifacts/ChatGPT_${{ env.version }}_windows_x86_64.msi.zip.sig"
+
+          mv "artifacts/aarch64/ChatGPT_${{ env.version }}_aarch64_en-US.msi" "artifacts/ChatGPT_${{ env.version }}_windows_aarch64.msi"
+          mv "artifacts/aarch64/ChatGPT_${{ env.version }}_aarch64_en-US.msi.zip" "artifacts/ChatGPT_${{ env.version }}_windows_aarch64.msi.zip"
+          mv "artifacts/aarch64/ChatGPT_${{ env.version }}_aarch64_en-US.msi.zip.sig" "artifacts/ChatGPT_${{ env.version }}_windows_aarch64.msi.zip.sig"
 
       - name: Create Release
         uses: softprops/action-gh-release@master
