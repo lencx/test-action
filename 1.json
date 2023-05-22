@@ -1,0 +1,4 @@
+[
+  { "act": "hello-1", "prompt": "hello 11111" },
+  { "act": "hello-2", "prompt": "hello 22222" }
+]
